@@ -1,0 +1,44 @@
+{
+	"name": "timtheenchanter",
+	"version": "1.0.0",
+	"main": "index.js",
+	"scripts": {
+		"start": "node index.js",
+		"test": "node node_modules/istanbul/lib/cli.js cover -x 'spec/**' node_modules/jasmine/bin/jasmine.js"
+	},
+	"author": "Tom Cully",
+	"private": true,
+	"repository": "git@github.com:tomdionysus/timtheenchanter.git",
+	"dependencies": {
+		"accept-language-parser": "^1.5.0",
+		"async": "^2.6.1",
+		"aws-sdk": "^2.362.0",
+		"body-parser": "^1.18.3",
+		"busboy": "^0.2.14",
+		"case": "^1.6.0",
+		"compression": "^1.7.3",
+		"cookie": "^0.3.1",
+		"cookie-parser": "^1.4.3",
+		"esprima": "^4.0.1",
+		"express": "^4.16.4",
+		"handlebars": "^4.0.12",
+		"jimp": "^0.2.28",
+		"memcached": "2.2.x",
+		"moment": "^2.22.2",
+		"node-sass": "^4.10.0",
+		"nodemailer": "^4.7.0",
+		"qr-image": "^3.2.0",
+		"request": "^2.88.0",
+		"stripe": "^5.10.0",
+		"striptags": "^3.1.1",
+		"tmp": "0.0.33",
+		"uglify-es": "^3.3.9",
+		"underscore": "^1.9.1",
+		"uuid": "^3.3.2"
+	},
+	"devDependencies": {
+		"eslint": "^5.9.0",
+		"istanbul": "0.4.5",
+		"jasmine": "2.8.0"
+	}
+}
