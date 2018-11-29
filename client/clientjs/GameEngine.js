@@ -1,4 +1,4 @@
-/* global Asset, async, TileBackground */
+/* global Asset, async, Area */
 
 class GameEngine {
 	constructor(options) {
@@ -6,7 +6,11 @@ class GameEngine {
 		this.targetId = options.targetId || 'game'
 
 		this.assetNames = {}
-		this.tiledBackgroundDefs = {}
+		this.areaDefs = {}
+		this.mobDefs = {}
+		this.changed = false
+
+		this.frame = 0
 	}
 
 	start(callback) {
@@ -14,16 +18,40 @@ class GameEngine {
 			// Load Assets
 			(cb) => { this.loadAssets(cb) },
 			// Init
-			(cb) => { this.init(cb) },
+			(cb) => { console.log("INOT"); this.init(cb) },
 			// Boot Element
 			(cb) => { this.bootElement(cb) },
 			// Draw Tiled Background
-			(cb) => { this.tileBackgrounds.dungeonroom.draw(this.element.getContext('2d'), cb) },
+			(cb) => { this.areas.dungeonroom.start(this.element.getContext('2d'), cb) },
 		], 
 		(err) => {
-			console.log("Started")
+			setInterval(this.animate.bind(this),250)
 			if(callback) callback(err)
 		})
+	}
+
+	animate() {
+
+		switch(this.frame) {
+		case 0:
+			this.areas.dungeonroom.mobs.torch.setTile(6,6)
+			this.areas.dungeonroom.mobs.gallagher.setTile(0,2)
+			break
+		case 1:
+			this.areas.dungeonroom.mobs.torch.setTile(6,5)
+			this.areas.dungeonroom.mobs.gallagher.setTile(1,2)
+			break
+		case 2:
+			this.areas.dungeonroom.mobs.torch.setTile(6,6)
+			this.areas.dungeonroom.mobs.gallagher.setTile(2,2)
+			break
+		case 3:
+			this.areas.dungeonroom.mobs.torch.setTile(6,5)
+			this.areas.dungeonroom.mobs.gallagher.setTile(1,2)
+			break
+		}
+		this.frame++
+		if(this.frame>3) this.frame = 0
 	}
 
 	addAsset(name, src) {
@@ -35,16 +63,27 @@ class GameEngine {
 		return this.assets[name]
 	}
 
-	addTiledBackground(name, assetName, tileData) {
-		this.tiledBackgroundDefs[name] = { assetName: assetName, tileData: tileData }
+	addArea(name, assetName, tileData) {
+		this.areaDefs[name] = { assetName: assetName, tileData: tileData }
+	}
+
+	addMob(name, assetName, areaName, offsetX, offsetY, tileX, tileY) {
+		this.mobDefs[name] = { assetName: assetName, areaName: areaName, offsetX: offsetX, offsetY: offsetY, tileX: tileX, tileY: tileY }
 	}
 
 	init(callback) {
+		console.log("INIt")
 		// TileBackgrounds
-		this.tileBackgrounds = {}
-		for(var i in this.tiledBackgroundDefs) {
-			var t = this.tiledBackgroundDefs[i]
-			this.tileBackgrounds[i] = new TileBackground({ tilesAsset: this.getAsset(t.assetName), tileData: t.tileData })
+		this.areas = {}
+		for(var i in this.areaDefs) {
+			var t = this.areaDefs[i]
+			this.areas[i] = new Area(Object.assign(t, { tilesAsset: this.getAsset(t.assetName) }))
+		}
+		// Mobs
+		this.mobs = {}
+		for(var i in this.mobDefs) {
+			var t = this.mobDefs[i]
+			this.areas[t.areaName].addMob(i, new Mob(Object.assign(t, { asset: this.getAsset(t.assetName) })))
 		}
 		callback()
 	}
