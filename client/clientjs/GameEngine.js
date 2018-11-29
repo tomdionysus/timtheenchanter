@@ -18,7 +18,7 @@ class GameEngine {
 			// Load Assets
 			(cb) => { this.loadAssets(cb) },
 			// Init
-			(cb) => { console.log("INOT"); this.init(cb) },
+			(cb) => { this.init(cb) },
 			// Boot Element
 			(cb) => { this.bootElement(cb) },
 			// Draw Tiled Background
@@ -72,7 +72,6 @@ class GameEngine {
 	}
 
 	init(callback) {
-		console.log("INIt")
 		// TileBackgrounds
 		this.areas = {}
 		for(var i in this.areaDefs) {

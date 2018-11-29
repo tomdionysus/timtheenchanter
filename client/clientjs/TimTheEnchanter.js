@@ -25,6 +25,6 @@ class TimTheEnchanter extends GameEngine {
 
 	start() {
 		super.start()
-		console.log("OK!")
+		console.log("Started")
 	}
 }
