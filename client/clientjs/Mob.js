@@ -11,7 +11,7 @@ class Mob {
 		this.areaTileHeight = options.areaTileHeight || this.tileHeight || 64
 		this.redraw = true
 
-		this.invalid = {}
+		this.invalid = { x1: 0xFFFFFFFF, x2: 0, y1: 0xFFFFFFFF, y2: 0}
 
 		this.animations = {}
 	}
@@ -27,7 +27,8 @@ class Mob {
 			this.tileWidth, 
 			this.tileHeight
 		)
-		this.invalid = {}
+		this.invalid = { x1: 0xFFFFFFFF, x2: 0, y1: 0xFFFFFFFF, y2: 0}
+
 		this.redraw = false
 	}
 
@@ -51,11 +52,10 @@ class Mob {
 	}
 
 	invalidate(x,y,w,h) {
-		this.invalid.x1 = Math.min(this.invalid.x1 || 0xFFFFFFFF, x)
-		this.invalid.x2 = Math.max(this.invalid.x2 || 0, x+w)
-		this.invalid.y1 = Math.min(this.invalid.y1 || 0xFFFFFFFF, y)
-		this.invalid.y2 = Math.max(this.invalid.y2 || 0, y+h)
-		console.log(this.invalid)
+		this.invalid.x1 = Math.min(this.invalid.x1, x)
+		this.invalid.x2 = Math.max(this.invalid.x2, x+w)
+		this.invalid.y1 = Math.min(this.invalid.y1, y)
+		this.invalid.y2 = Math.max(this.invalid.y2, y+h)
 	}
 
 	getInvalidatedBounds() {

@@ -32,24 +32,28 @@ class Editor extends GameEngine {
 	}
 
 	processKey(e) {
-			console.log(e.keyCode)
 		switch(e.keyCode) {
 			case 37:
 				this.cursorX = Math.max(0,this.cursorX-1)
+				this.moved = true
 				break
 			case 39:
 				this.cursorX = Math.min(50,this.cursorX+1)
+				this.moved = true
 				break
 			case 38:
 				this.cursorY = Math.max(0,this.cursorY-1)
+				this.moved = true
 				break
 			case 40:
 				this.cursorY = Math.min(50,this.cursorY+1)
+				this.moved = true
 				break
 			default:
 				console.log(e)
 		}
 
-		this.getMob('cursor').moveToTile(this.cursorX,this.cursorY)
+		if(this.moved) this.getMob('cursor').moveToTile(this.cursorX,this.cursorY)
+		this.moved = false
 	}
 }

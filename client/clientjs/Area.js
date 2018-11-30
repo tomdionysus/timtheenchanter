@@ -85,7 +85,7 @@ class Area {
 		// Draw mobs
 		for(var i in this.mobs) {
 			var mob = this.mobs[i]
-			mob.draw(this.drawContext, this.offsetX, this.offsetY)
+			if(mob.redraw) mob.draw(this.drawContext, this.offsetX, this.offsetY)
 		}
 		if(this.running) window.requestAnimationFrame(this.draw,0)
 	}
