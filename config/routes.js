@@ -11,4 +11,5 @@ module.exports.register = function(svr) {
 
 	// Index
 	svr.registerPublic('/', 'index')
+	svr.registerPublic('/editor', 'editor')
 }

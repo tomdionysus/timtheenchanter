@@ -43,13 +43,13 @@ class Area {
 		this.running = false
 	}
 
-	invalidateRange(x,y,w,h) {
-		var rx1 = Math.floor(x / this.tileWidth)
-		var rx2 = Math.ceil((x+w) / this.tileWidth)
-		var ry1 = Math.floor(y / this.tileHeight)
-		var ry2 = Math.ceil((y+h) / this.tileHeight)
-		for(x = rx1; x<=rx2; x++) {
-			for(y = ry1; y<=ry2; y++) {
+	invalidateRange(x1,y1,x2,y2) {
+		var rx1 = Math.floor(x1 / this.tileWidth)
+		var rx2 = Math.ceil(x2 / this.tileWidth)
+		var ry1 = Math.floor(y1 / this.tileHeight)
+		var ry2 = Math.ceil(y2 / this.tileHeight)
+		for(var x = rx1; x<=rx2; x++) {
+			for(var y = ry1; y<=ry2; y++) {
 				this.toDraw.push({ x: x, y: y, t: this.tileData[y][x] })
 			}
 		}
@@ -60,7 +60,8 @@ class Area {
 		for(var i in this.mobs) {
 			var mob = this.mobs[i]
 			if(mob.redraw) {
-				this.invalidateRange(mob.offsetX,mob.offsetY,mob.tileWidth,mob.tileHeight)
+				var inv = mob.getInvalidatedBounds()
+				this.invalidateRange(inv.x1,inv.y1,inv.x2,inv.y2)
 			}
 		}
 		// Draw all invalid tiles
