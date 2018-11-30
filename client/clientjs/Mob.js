@@ -7,7 +7,11 @@ class Mob {
 		this.tile = [options.tileX || 0,options.tileY || 0]
 		this.offsetX = options.offsetX || 0
 		this.offsetY = options.offsetY || 0
+		this.areaTileWidth = options.areaTileWidth || this.tileWidth || 64
+		this.areaTileHeight = options.areaTileHeight || this.tileHeight || 64
 		this.redraw = true
+
+		this.animations = {}
 	}
 
 	draw(drawContext, areaOffsetX, areaOffsetY) {
@@ -27,6 +31,18 @@ class Mob {
 	setTile(x,y) {
 		this.tile[0] = x
 		this.tile[1] = y
+		this.redraw = true
+	}
+
+	moveTo(x,y) {
+		this.offsetX = x
+		this.offsetY = y
+		this.redraw = true
+	}
+
+	moveToTile(x,y) {
+		this.offsetX = x*this.areaTileWidth
+		this.offsetY = y*this.areaTileHeight
 		this.redraw = true
 	}
 }
