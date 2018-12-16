@@ -20,8 +20,6 @@ class TimTheEnchanter extends GameEngine {
 
 	start() {
 		super.start()
-
-		console.log("Started")
 	}
 
 	drawHUD(context) {

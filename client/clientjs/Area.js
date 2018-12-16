@@ -90,6 +90,7 @@ class Area {
 				// Draw all layers in cell
 				for(i in cell.t) {
 					var t = cell.t[i]
+					if(!t) continue
 					context.drawImage(
 						this.tilesAsset.element, 
 						t[0]*this.tileWidth, 

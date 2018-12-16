@@ -1,4 +1,4 @@
-/* global GameEngine, Mob */
+/* global GameEngine, Mob, getAPIClient */
 
 class Editor extends GameEngine {
 	constructor(options) {
@@ -99,6 +99,17 @@ class Editor extends GameEngine {
 			delete tile[this.cursorZ]
 			while(tile.length>0 && tile[tile.length-1]===null) tile.pop()
 			this.areas['dungeon'].setTiles(this.cursorX, this.cursorY, tile)
+			break
+		case 88:
+			// x - Reload All
+			this.areas['dungeon'].redraw()
+			break	
+		case 90:
+			// z - Save
+			var api = getAPIClient()
+			api.post('/map', { map: this.areas['dungeon'].tileData }, (err) => {
+				if(err) { return console.error(err) }
+			})
 			break			
 		default:
 			console.log(e.keyCode)
