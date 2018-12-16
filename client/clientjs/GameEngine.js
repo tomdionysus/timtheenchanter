@@ -113,25 +113,29 @@ class GameEngine {
 
 		// HUD
 		if(this.clear) {
-			context.save()
-			context.font='14px Arial'
-			context.fillStyle = 'white'
-			context.fillText(
-				'Screen (X: '+Math.round(this.x)
-				+' Y: '+Math.round(this.y)
-				+' W: '+Math.round(this.w)
-				+' H: '+Math.round(this.h)+')'
-				+' Zoom: '+Math.round(this.scale*100)+'%'
-				+' Mouse (X: '+Math.round(this.mouseX)+' Y: '+Math.round(this.mouseY)+')'
-				+' Limits Min: (X: '+Math.round(this.minX/this.scale)+', Y: '+Math.round(this.minY/this.scale)+')'
-				+' Limit Max: (X: '+Math.round(this.maxX*this.scale)+', Y: '+Math.round(this.maxY*this.scale)+')'
-				, 10, 20)
-			context.restore()
+			this.drawHUD(context)
 		}
 		
 		this.clear = false
 
 		if(this.running) window.requestAnimationFrame(this.tick.bind(this),0)
+	}
+
+	drawHUD(context) {
+		context.save()
+		context.font='14px Arial'
+		context.fillStyle = 'white'
+		context.fillText(
+			'Screen (X: '+Math.round(this.x)
+			+' Y: '+Math.round(this.y)
+			+' W: '+Math.round(this.w)
+			+' H: '+Math.round(this.h)+')'
+			+' Zoom: '+Math.round(this.scale*100)+'%'
+			+' Mouse (X: '+Math.round(this.mouseX)+' Y: '+Math.round(this.mouseY)+')'
+			+' Limits Min: (X: '+Math.round(this.minX/this.scale)+', Y: '+Math.round(this.minY/this.scale)+')'
+			+' Limit Max: (X: '+Math.round(this.maxX*this.scale)+', Y: '+Math.round(this.maxY*this.scale)+')'
+			, 10, 20)
+		context.restore()
 	}
 
 	addMob(name, assetName, areaName, offsetX, offsetY, tileX, tileY) {

@@ -20,14 +20,39 @@ class Editor extends GameEngine {
 
 		this.cursorX = 0
 		this.cursorY = 0
-		this.cursorX = 0
-		this.cursorY = 0
 		this.cursorZ = 0
 	}
 
 	start() {
 		super.start()
 		document.onkeyup = (e) => { this.processKey(e) }
+		document.onkeydown = (e) => { e.preventDefault(); e.stopPropagation() }
+	}
+
+	drawHUD(context) {
+		context.save()
+		context.font='14px Arial'
+		context.fillStyle = 'white'
+		var tile = this.areas['dungeon'].getTiles(this.cursorX, this.cursorY)
+		var tileStr = ''
+		if(tile) {
+			tileStr += '[ '
+			for(var t in tile) {
+				var tileL = tile[t]
+				tileStr += tileL ? 'X: '+tileL[0]+' Y: '+tileL[1]+', ' : 'None'
+			}
+			while([' ',','].indexOf(tileStr[tileStr.length-1])!=-1) tileStr = tileStr.substr(0,tileStr.length-1)
+			tileStr += ' ]'
+		} else {
+			tileStr = 'None'
+		}
+		context.fillText(
+			'X: '+this.cursorX
+			+' Y: '+this.cursorY
+			+' Z: '+this.cursorZ
+			+' Tile: '+tileStr
+			, 10, 20)
+		context.restore()
 	}
 
 	processKey(e) {
@@ -51,7 +76,7 @@ class Editor extends GameEngine {
 			this.cursorZ = Math.min(50,this.cursorZ+1)
 			break
 		case 81:
-			this.cursorZ = Math.min(50,this.cursorZ+1)
+			this.cursorZ = Math.max(0,this.cursorZ-1)
 			break
 		case 65:
 			// a
@@ -87,7 +112,20 @@ class Editor extends GameEngine {
 			console.log(e.keyCode)
 		}
 
-		this.areas['dungeon'].draw()
+		this.areas['dungeon'].invalidateAll()
+		this.clear = true
+		this.getMob('cursor').moveToTile(this.cursorX,this.cursorY)
+
+		e.preventDefault()
+		e.stopPropagation()
+	}
+
+	_mousedown(e) {
+	}
+
+	_mouseup(e) {
+		this.cursorX = Math.floor(this.mouseX / 64)
+		this.cursorY = Math.floor(this.mouseY / 64)
 		this.getMob('cursor').moveToTile(this.cursorX,this.cursorY)
 	}
 }

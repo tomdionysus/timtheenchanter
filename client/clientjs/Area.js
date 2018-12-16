@@ -21,7 +21,8 @@ class Area {
 
 	invalidateAll() {
 		for(var y = 0; y< this.tileData.length; y++) {
-			var col = this.tileData[y]
+			var col = this.tileData[y] 
+			if(!col) continue
 			for(var x = 0; x<col.length; x++) {
 				if(!col[x]) continue
 				this.toDraw.push({ x: x, y: y, t: col[x] })
@@ -34,18 +35,21 @@ class Area {
 	}
 
 	getTiles(x,y) {
-		return this.tileData[y][x]
+		var row = this.tileData[y]
+		return row ? row[x] : null
 	}
 
 	setTiles(x,y,tiles) {
+		this.tileData[y] = this.tileData[y] || []
 		this.tileData[y][x] = tiles
 		this.toDraw.push({ x: x, y: y, t: this.tileData[y][x] })
 	}
 
 	invalidateTileRange(x1,y1,x2,y2) {
-		for(var x = x1; x<=x2; x++) {
-			for(var y = y1; y<=y2; y++) {
-				this.toDraw.push({ x: x, y: y, t: this.tileData[y][x] })
+		for(var y = y1; y<=y2 && y<this.tileData.length; y++) {
+			var r = this.tileData[y]
+			for(var x = x1; x<=x2 && x<r.length; x++) {
+				this.toDraw.push({ x: x, y: y, t: r[x] })
 			}
 		}
 	}
