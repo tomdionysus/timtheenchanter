@@ -94,7 +94,7 @@ class GameEngine {
 		if(this.clear) {
 			context.fillStyle = 'black'
 			context.fillRect(0, 0, this.element.width, this.element.height)
-			this.clear = false
+			
 		}
 
 		// Main
@@ -103,7 +103,7 @@ class GameEngine {
 		// Set scale
 		context.scale(this.scale, this.scale)
 		context.translate(this.x, this.y)
-		
+
 		for(var i in this.areas) {
 			var area = this.areas[i]
 			area.draw(context)
@@ -112,18 +112,24 @@ class GameEngine {
 		context.restore()
 
 		// HUD
-		context.font='12px Arial'
-		context.fillStyle = 'white'
-		context.fillText(
-			'Screen (X: '+Math.round(this.x)
-			+' Y: '+Math.round(this.y)
-			+' W: '+Math.round(this.w)
-			+' H: '+Math.round(this.h)+')'
-			+' Zoom: '+Math.round(this.scale*100)+'%'
-			+' Mouse (X: '+Math.round(this.mouseX)+' Y: '+Math.round(this.mouseY)+')'
-			+' Limits Min: (X: '+Math.round(this.minX/this.scale)+', Y: '+Math.round(this.minY/this.scale)+')'
-			+' Limit Max: (X: '+Math.round(this.maxX*this.scale)+', Y: '+Math.round(this.maxY*this.scale)+')'
-			, 5, 10)
+		if(this.clear) {
+			context.save()
+			context.font='14px Arial'
+			context.fillStyle = 'white'
+			context.fillText(
+				'Screen (X: '+Math.round(this.x)
+				+' Y: '+Math.round(this.y)
+				+' W: '+Math.round(this.w)
+				+' H: '+Math.round(this.h)+')'
+				+' Zoom: '+Math.round(this.scale*100)+'%'
+				+' Mouse (X: '+Math.round(this.mouseX)+' Y: '+Math.round(this.mouseY)+')'
+				+' Limits Min: (X: '+Math.round(this.minX/this.scale)+', Y: '+Math.round(this.minY/this.scale)+')'
+				+' Limit Max: (X: '+Math.round(this.maxX*this.scale)+', Y: '+Math.round(this.maxY*this.scale)+')'
+				, 10, 20)
+			context.restore()
+		}
+		
+		this.clear = false
 
 		if(this.running) window.requestAnimationFrame(this.tick.bind(this),0)
 	}
@@ -190,10 +196,12 @@ class GameEngine {
 	}
 
 	bootElement(callback) {
-		this.target = document.getElementById(this.targetId )
+		this.target = document.getElementById(this.targetId)
 		this.element = document.createElement('canvas')
-		this.element.width = 640
-		this.element.height = 480
+
+		this.element.width = this.target.getAttribute('width')
+		this.element.height = this.target.getAttribute('height')
+
 		this.element.classList.add('gamescreen')
 		this.target.parentNode.replaceChild(this.element, this.target)
 

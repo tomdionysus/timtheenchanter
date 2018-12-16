@@ -28,13 +28,12 @@ class Editor extends GameEngine {
 	start() {
 		super.start()
 		document.onkeyup = (e) => { this.processKey(e) }
-
-		console.log("Started")
 	}
 
 	processKey(e) {
-		var tile
-
+		var tile = this.areas['dungeon'].getTiles(this.cursorX, this.cursorY)
+		if(!tile) tile = []
+		
 		switch(e.keyCode) {
 		case 37:
 			this.cursorX = Math.max(0,this.cursorX-1)
@@ -56,53 +55,39 @@ class Editor extends GameEngine {
 			break
 		case 65:
 			// a
-			tile = this.areas['dungeon'].getTiles(this.cursorX, this.cursorY)
-			if(!tile) tile = []
 			if(!tile[this.cursorZ]) tile[this.cursorZ] = [0,0]
 			tile[this.cursorZ][0]--
 			this.areas['dungeon'].setTiles(this.cursorX, this.cursorY, tile)
-			this.areas['dungeon'].draw()
 			break
 		case 68:
 			// d
-			tile = this.areas['dungeon'].getTiles(this.cursorX, this.cursorY)
-			if(!tile) tile = []
 			if(!tile[this.cursorZ]) tile[this.cursorZ] = [0,0]
 			tile[this.cursorZ][0]++
 			this.areas['dungeon'].setTiles(this.cursorX, this.cursorY, tile)
-			this.areas['dungeon'].draw()
 			break
 		case 87:
 			// w
-			tile = this.areas['dungeon'].getTiles(this.cursorX, this.cursorY)
-			if(!tile) tile = []
 			if(!tile[this.cursorZ]) tile[this.cursorZ] = [0,0]
 			tile[this.cursorZ][1]--
 			this.areas['dungeon'].setTiles(this.cursorX, this.cursorY, tile)
-			this.areas['dungeon'].draw()
 			break
 		case 83:
 			// s
-			tile = this.areas['dungeon'].getTiles(this.cursorX, this.cursorY)
-			if(!tile) tile = []
 			if(!tile[this.cursorZ]) tile[this.cursorZ] = [0,0]
 			tile[this.cursorZ][1]++
 			this.areas['dungeon'].setTiles(this.cursorX, this.cursorY, tile)
-			this.areas['dungeon'].draw()
 			break
 		case 8:
 			// clear level
-			tile = this.areas['dungeon'].getTiles(this.cursorX, this.cursorY)
-			if(!tile) tile = []
 			delete tile[this.cursorZ]
 			while(tile.length>0 && tile[tile.length-1]===null) tile.pop()
 			this.areas['dungeon'].setTiles(this.cursorX, this.cursorY, tile)
-			this.areas['dungeon'].draw()
 			break			
 		default:
 			console.log(e.keyCode)
 		}
 
+		this.areas['dungeon'].draw()
 		this.getMob('cursor').moveToTile(this.cursorX,this.cursorY)
 	}
 }
