@@ -73,7 +73,6 @@ class Area {
 		}
 
 		// Draw all invalid tiles
-		var cleared = {}
 		var drawn = {}
 		while (true) {
 			var cell = this.toDraw.pop()
