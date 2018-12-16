@@ -46,6 +46,20 @@ class Area {
 		this.toDraw.push({ x: x, y: y, t: this.tileData[y][x] })
 	}
 
+	optimise() {
+		for(var y = 0; y<this.tileData.length; y++) {
+			var row = this.tileData[y]
+			for(var x = 0; x<row.length; x++) {
+				var cell = row[x]
+				while(cell.length>0 && cell[cell.length-1] == null) cell.pop()
+				row[x] = cell
+			}
+			while(row.length>0 && row[row.length-1] == null || row[row.length-1] == []) row.pop()
+			this.tileData[y] = row
+		}
+		while(this.tileData.length>0 && this.tileData[this.tileData.length-1] == null || this.tileData[this.tileData.length-1] == []) this.tileData.pop()
+	}
+
 	invalidateTileRange(x1,y1,x2,y2) {
 		for(var y = y1; y<=y2 && y<this.tileData.length; y++) {
 			var r = this.tileData[y]

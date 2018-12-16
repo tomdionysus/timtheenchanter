@@ -97,7 +97,7 @@ class Editor extends GameEngine {
 		case 8:
 			// clear level
 			delete tile[this.cursorZ]
-			while(tile.length>0 && tile[tile.length-1]===null) tile.pop()
+			while(tile.length>0 && tile[tile.length-1]==null) tile.pop()
 			this.areas['dungeon'].setTiles(this.cursorX, this.cursorY, tile)
 			break
 		case 88:
@@ -106,6 +106,7 @@ class Editor extends GameEngine {
 			break	
 		case 90:
 			// z - Save
+			this.areas['dungeon'].optimise()
 			var api = getAPIClient()
 			api.post('/map', { map: this.areas['dungeon'].tileData }, (err) => {
 				if(err) { return console.error(err) }
