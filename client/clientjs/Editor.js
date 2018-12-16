@@ -112,7 +112,7 @@ class Editor extends GameEngine {
 			console.log(e.keyCode)
 		}
 
-		this.areas['dungeon'].invalidateAll()
+		this.areas['dungeon'].redraw()
 		this.clear = true
 		this.getMob('cursor').moveToTile(this.cursorX,this.cursorY)
 

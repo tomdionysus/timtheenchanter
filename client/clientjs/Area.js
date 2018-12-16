@@ -19,7 +19,8 @@ class Area {
 		this.mobs[id].area = this
 	}
 
-	invalidateAll() {
+	redraw() {
+		// Tiles
 		for(var y = 0; y< this.tileData.length; y++) {
 			var col = this.tileData[y] 
 			if(!col) continue
@@ -30,7 +31,7 @@ class Area {
 		}
 		// Mobs
 		for(var i in this.mobs) {
-			this.mobs[i].redraw = true
+			this.mobs[i].redraw()
 		}
 	}
 
@@ -63,15 +64,14 @@ class Area {
 	}
 
 	draw(context) {
-		var i, mob
+		var i
+
 		// Invalidate Mob backgrounds if redrawn
 		for(i in this.mobs) {
-			mob = this.mobs[i]
-			if(mob.redraw) {
-				var inv = mob.getInvalidatedBounds()
-				this.invalidateRange(inv.x1,inv.y1,inv.x2,inv.y2)
-			}
+			var inv = this.mobs[i].getInvalidatedBounds()
+			if(inv) this.invalidateRange(inv.x1,inv.y1,inv.x2,inv.y2)
 		}
+
 		// Draw all invalid tiles
 		var cleared = {}
 		while (true) {
@@ -105,8 +105,7 @@ class Area {
 		}
 		// Draw mobs
 		for(i in this.mobs) {
-			mob = this.mobs[i]
-			if(mob.redraw) mob.draw(context)
+			this.mobs[i].draw(context)
 		}
 	}
 }

@@ -9,7 +9,7 @@ class Mob {
 		this.offsetY = options.offsetY || 0
 		this.areaTileWidth = options.areaTileWidth || this.tileWidth || 64
 		this.areaTileHeight = options.areaTileHeight || this.tileHeight || 64
-		this.redraw = true
+		this.toRedraw = true
 
 		this.invalid = { x1: Number.MAX_SAFE_INTEGER, x2: 0, y1: Number.MAX_SAFE_INTEGER, y2: 0}
 
@@ -17,6 +17,8 @@ class Mob {
 	}
 
 	draw(context) {
+		if(!this.toRedraw) return
+
 		context.drawImage(
 			this.asset.element, 
 			this.tile[0]*this.tileWidth, 
@@ -30,14 +32,18 @@ class Mob {
 		)
 		this.invalid = { x1: Number.MAX_SAFE_INTEGER, x2: 0, y1: Number.MAX_SAFE_INTEGER, y2: 0}
 
-		this.redraw = false
+		this.toRedraw = false
+	}
+
+	redraw() {
+		this.toRedraw = true
 	}
 
 	setTile(x,y) {
 		this.invalidateCurrent()
 		this.tile[0] = x
 		this.tile[1] = y
-		this.redraw = true
+		this.toRedraw = true
 	}
 
 	moveTo(x,y) {
@@ -45,7 +51,7 @@ class Mob {
 		this.offsetX = x
 		this.offsetY = y
 		this.invalidateCurrent()
-		this.redraw = true
+		this.toRedraw = true
 	}
 
 	invalidateCurrent() {
@@ -60,7 +66,7 @@ class Mob {
 	}
 
 	getInvalidatedBounds() {
-		return this.invalid
+		return this.toRedraw ? this.invalid : null
 	}
 
 	moveToTile(x,y) {

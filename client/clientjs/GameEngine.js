@@ -84,7 +84,7 @@ class GameEngine {
 		this.clear = true
 		for(var i in this.areas) {
 			var area = this.areas[i]
-			area.invalidateAll()
+			area.redraw()
 		}	
 	}
 
