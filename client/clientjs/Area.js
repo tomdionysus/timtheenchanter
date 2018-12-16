@@ -74,33 +74,38 @@ class Area {
 
 		// Draw all invalid tiles
 		var cleared = {}
+		var drawn = {}
 		while (true) {
 			var cell = this.toDraw.pop()
 			if (!cell) break
-			for(i in cell.t) {
-				var t = cell.t[i]
-				if(!cleared[cell.x] || !cleared[cell.x][cell.y]) {
-					context.color = 'black'
-					context.fillRect(
-						cell.x*this.tileWidth, 
-						cell.y*this.tileHeight, 
-						this.tileWidth, 
-						this.tileHeight
-					)
-					cleared[cell.x] = cleared[cell.x] || {}
-					cleared[cell.x][cell.y] = true
-				}
-				context.drawImage(
-					this.tilesAsset.element, 
-					t[0]*this.tileWidth, 
-					t[1]*this.tileHeight, 
-					this.tileWidth, 
-					this.tileHeight,
+			// Cell previously drawn?
+			if(!drawn[cell.x] || !drawn[cell.x][cell.y]) {
+				// Clear Cell
+				context.color = 'black'
+				context.fillRect(
 					cell.x*this.tileWidth, 
 					cell.y*this.tileHeight, 
 					this.tileWidth, 
 					this.tileHeight
 				)
+				// Draw all layers in cell
+				for(i in cell.t) {
+					var t = cell.t[i]
+					context.drawImage(
+						this.tilesAsset.element, 
+						t[0]*this.tileWidth, 
+						t[1]*this.tileHeight, 
+						this.tileWidth, 
+						this.tileHeight,
+						cell.x*this.tileWidth, 
+						cell.y*this.tileHeight, 
+						this.tileWidth, 
+						this.tileHeight
+					)
+				}
+				// Mark cell drawn
+				drawn[cell.x] = drawn[cell.x] || {}
+				drawn[cell.x][cell.y] = true
 			}
 		}
 		// Draw mobs
