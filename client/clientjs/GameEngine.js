@@ -1,4 +1,4 @@
-/* global Asset, async, Area */
+/* global Asset, async, Area, Mob */
 
 class GameEngine {
 	constructor(options) {
@@ -11,10 +11,25 @@ class GameEngine {
 		this.animationDefs = {}
 		this.changed = false
 
-		this.frame = 0
+		this.scale = typeof(options.scale)=='undefined' ? 1 : options.scale
+		this.x = options.x || 0
+		this.y = options.y || 0
+		this.scale = options.scale || 1
+
+		this.minX = options.minX
+		this.minY = options.minY
+		this.maxX = options.maxX
+		this.maxY = options.maxY
+
+		this.minScale = typeof(options.minScale)=='undefined' ? 0.01 : options.minScale
+		this.maxScale = typeof(options.maxScale)=='undefined' ? 10 : options.maxScale
+
+		this.enableScroll = typeof(options.enableScroll)=='undefined' ? true : !!options.enableScroll
+		this.enableZoom = typeof(options.enableZoom)=='undefined' ? true : !!options.enableZoom
 	}
 
 	start(callback) {
+		this.running = true
 		async.series([
 			// Load Assets
 			(cb) => { this.loadAssets(cb) },
@@ -32,6 +47,20 @@ class GameEngine {
 		})
 	}
 
+	bindMouseWheel() {
+		var ael = this.element.addEventListener
+		if(!ael) ael = this.element.attachEvent
+		ael('mousewheel', (e) => this._panZoom(e), false)
+		ael('DOMMouseScroll', (e) => this._panZoom(e), false)
+		ael('mousemove', (e) => this._move(e), false)
+		ael('mousedown', (e) => this._mousedown(e), false)
+		ael('mouseup', (e) => this._mouseup(e), false)
+	}
+
+	stop() {
+		this.running = false
+	}
+
 	addAsset(name, src) {
 		this.assetNames[name] = src
 	}
@@ -46,9 +75,57 @@ class GameEngine {
 	}
 
 	startAreas(callback) {
-		async.eachOf(this.areas, (area, name, cb) => {
-			area.start(this.element.getContext('2d'), cb)
-		}, callback)
+		this.redraw()
+		if(this.running) window.requestAnimationFrame(this.tick.bind(this),0)
+		if(callback) callback()
+	}
+
+	redraw() {
+		this.clear = true
+		for(var i in this.areas) {
+			var area = this.areas[i]
+			area.invalidateAll()
+		}	
+	}
+
+	tick() {
+		var context = this.element.getContext('2d')
+
+		if(this.clear) {
+			context.fillStyle = 'black'
+			context.fillRect(0, 0, this.element.width, this.element.height)
+			this.clear = false
+		}
+
+		// Main
+		context.save()
+
+		// Set scale
+		context.scale(this.scale, this.scale)
+		context.translate(this.x, this.y)
+		
+		for(var i in this.areas) {
+			var area = this.areas[i]
+			area.draw(context)
+		}
+
+		context.restore()
+
+		// HUD
+		context.font='12px Arial'
+		context.fillStyle = 'white'
+		context.fillText(
+			'Screen (X: '+Math.round(this.x)
+			+' Y: '+Math.round(this.y)
+			+' W: '+Math.round(this.w)
+			+' H: '+Math.round(this.h)+')'
+			+' Zoom: '+Math.round(this.scale*100)+'%'
+			+' Mouse (X: '+Math.round(this.mouseX)+' Y: '+Math.round(this.mouseY)+')'
+			+' Limits Min: (X: '+Math.round(this.minX/this.scale)+', Y: '+Math.round(this.minY/this.scale)+')'
+			+' Limit Max: (X: '+Math.round(this.maxX*this.scale)+', Y: '+Math.round(this.maxY*this.scale)+')'
+			, 5, 10)
+
+		if(this.running) window.requestAnimationFrame(this.tick.bind(this),0)
 	}
 
 	addMob(name, assetName, areaName, offsetX, offsetY, tileX, tileY) {
@@ -70,31 +147,32 @@ class GameEngine {
 	startAnimations(callback) {
 		for(var i in this.animations) {
 			var a = this.animations[i]
-			if(!a.autoStart) continue;
+			if(!a.autoStart) { continue }
 			a.start()
 		}
 		if (callback) callback()
 	}
 
 	init(callback) {
+		var i,t
 		// TileBackgrounds
 		this.areas = {}
-		for(var i in this.areaDefs) {
-			var t = this.areaDefs[i]
+		for(i in this.areaDefs) {
+			t = this.areaDefs[i]
 			this.areas[i] = new Area(Object.assign(t, { tilesAsset: this.getAsset(t.assetName) }))
 		}
 		// Mobs
 		this.mobs = {}
-		for(var i in this.mobDefs) {
-			var t = this.mobDefs[i]
+		for(i in this.mobDefs) {
+			t = this.mobDefs[i]
 			var mob = new Mob(Object.assign(t, { asset: this.getAsset(t.assetName) }))
 			this.mobs[i] = mob
 			this.areas[t.areaName].addMob(i, mob)
 		}
 		// Amimations
 		this.animations = {}
-		for(var i in this.animationDefs) {
-			var t = this.animationDefs[i]
+		for(i in this.animationDefs) {
+			t = this.animationDefs[i]
 			this.animations[i] = new Animation(Object.assign(t, { mob: this.getMob(t.mobName) }))
 		}
 		if(callback) callback()
@@ -118,6 +196,66 @@ class GameEngine {
 		this.element.height = 480
 		this.element.classList.add('gamescreen')
 		this.target.parentNode.replaceChild(this.element, this.target)
+
+		this.w = this.element.width / this.scale
+		this.h = this.element.height / this.scale
+
+		if(this.enableScroll || this.enableZoom) this.bindMouseWheel()
+
 		if(callback) callback()
+	}
+
+	// Event Handlers
+	_panZoom(e) {
+		if(e.shiftKey) {
+			var f = e.deltaY/100
+			this.scale = this.scale + f
+
+			if(this.minScale) this.scale = Math.max(this.scale, this.minScale)
+			if(this.maxScale) this.scale = Math.min(this.scale, this.maxScale)
+
+			// Update Width/Height
+			var ow = this.w, oh = this.h
+			this.w = this.element.width / this.scale
+			this.h = this.element.height / this.scale
+
+			// Update x and y to centre zoom
+			this.x = this.x-(ow-this.w)/2
+			this.y = this.y-(oh-this.h)/2
+
+		} else {
+			this.x += e.deltaX
+			this.y += e.deltaY
+		}
+
+		// Limits? 
+		if(this.minX) this.x = Math.max(this.minX*this.scale, this.x)
+		if(this.minY) this.y = Math.max(this.minY*this.scale, this.y)
+		if(this.maxX) this.x = Math.min(this.maxX/this.scale, this.x)
+		if(this.maxY) this.y = Math.min(this.maxY/this.scale, this.y)
+
+		// Correct Mouse Coords
+		this._setMouseCoords(e)
+
+		this.redraw()
+
+		// Prevent DOM Stuff
+		e.preventDefault()
+		e.stopPropagation()
+	}
+
+	_move(e) {
+		this._setMouseCoords(e)
+		
+		this.redraw()
+
+		// Prevent DOM Stuff
+		e.preventDefault()
+		e.stopPropagation()
+	}
+
+	_setMouseCoords(e) {
+		this.mouseX = (e.offsetX/this.scale)-this.x
+		this.mouseY = (e.offsetY/this.scale)-this.y
 	}
 }

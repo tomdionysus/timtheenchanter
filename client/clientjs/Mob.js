@@ -16,14 +16,15 @@ class Mob {
 		this.animations = {}
 	}
 
-	draw(drawContext, areaOffsetX, areaOffsetY) {
-		drawContext.drawImage(
+	draw(context) {
+		context.drawImage(
 			this.asset.element, 
 			this.tile[0]*this.tileWidth, 
 			this.tile[1]*this.tileHeight, 
 			this.tileWidth, 
 			this.tileHeight,
-			areaOffsetX+this.offsetX, areaOffsetY+this.offsetY,
+			this.offsetX, 
+			this.offsetY,
 			this.tileWidth, 
 			this.tileHeight
 		)
