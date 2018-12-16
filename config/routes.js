@@ -12,4 +12,7 @@ module.exports.register = function(svr) {
 	// Index
 	svr.registerPublic('/', 'index')
 	svr.registerPublic('/editor', 'editor')
+
+	// Editor API Routes
+	svr.registerPublic('/api/map', 'map')
 }
