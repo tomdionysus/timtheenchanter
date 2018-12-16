@@ -7,9 +7,7 @@ class TimTheEnchanter extends GameEngine {
 		this.addAsset('dungeon','/images/tileset_dungeon.png')
 		this.addAsset('gallagher','/images/gallagher.png')
 
-		this.addArea('dungeonroom','dungeon'
-
-			)
+		this.addArea('dungeonroom', 'dungeon', '/map')
 
 		this.debug = true
 

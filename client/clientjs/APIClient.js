@@ -32,6 +32,3 @@ class APIClient {
 function getAPIClient() {
 	return window.apiClient = window.apiClient || new APIClient({ baseUrl: '/api' })
 }
-function getPublicClient() {
-	return window.publicClient = window.publicClient || new APIClient({ baseUrl: '' })
-}

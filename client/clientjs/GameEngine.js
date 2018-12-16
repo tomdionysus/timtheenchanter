@@ -1,4 +1,4 @@
-/* global Asset, async, Area, Mob */
+/* global Asset, async, Area, Mob, getAPIClient */
 
 class GameEngine {
 	constructor(options) {
@@ -33,6 +33,8 @@ class GameEngine {
 		async.series([
 			// Load Assets
 			(cb) => { this.loadAssets(cb) },
+			// Load Assets
+			(cb) => { this.loadAreas(cb) },
 			// Init
 			(cb) => { this.init(cb) },
 			// Boot Element
@@ -70,11 +72,13 @@ class GameEngine {
 		return this.assets[name]
 	}
 
-	addArea(name, assetName, tileData) {
-		this.areaDefs[name] = { assetName: assetName, tileData: tileData }
+	addArea(name, assetName, tileDataUrl) {
+		this.areaDefs[name] = { assetName: assetName, tileDataUrl: tileDataUrl }
 	}
 
 	startAreas(callback) {
+
+
 		this.redraw()
 		if(this.running) window.requestAnimationFrame(this.tick.bind(this),0)
 		if(callback) callback()
@@ -150,14 +154,21 @@ class GameEngine {
 		
 	}
 
-	init(callback) {
-		var i,t
+	loadAreas(callback) {
 		// TileBackgrounds
 		this.areas = {}
-		for(i in this.areaDefs) {
-			t = this.areaDefs[i]
-			this.areas[i] = new Area(Object.assign(t, { tilesAsset: this.getAsset(t.assetName) }))
-		}
+		var api = getAPIClient()
+		async.eachOf(this.areaDefs, (areaDef, name, cb) => {
+			api.get(areaDef.tileDataUrl, (err, data) => {
+				if(err) return cb(err)
+				this.areas[name] = new Area(Object.assign(areaDef, { tileData: data.map, tilesAsset: this.getAsset(areaDef.assetName) }))
+				cb()
+			})
+		}, callback)
+	}
+
+	init(callback) {
+		var i,t
 		// Mobs
 		this.mobs = {}
 		for(i in this.mobDefs) {
