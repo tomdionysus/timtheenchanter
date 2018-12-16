@@ -31,6 +31,15 @@ class Area {
 		}
 	}
 
+	getTiles(x,y) {
+		return this.tileData[y][x]
+	}
+
+	setTiles(x,y,tiles) {
+		this.tileData[y][x] = tiles
+		this.toDraw.push({ x: x, y: y, t: this.tileData[y][x] })
+	}
+
 	start(drawContext, cb) {
 		this.drawContext = drawContext
 		this.drawAll()
@@ -43,16 +52,20 @@ class Area {
 		this.running = false
 	}
 
+	invalidateTileRange(x1,y1,x2,y2) {
+		for(var x = x1; x<=x2; x++) {
+			for(var y = y1; y<=y2; y++) {
+				this.toDraw.push({ x: x, y: y, t: this.tileData[y][x] })
+			}
+		}
+	}
+
 	invalidateRange(x1,y1,x2,y2) {
 		var rx1 = Math.floor(x1 / this.tileWidth)
 		var rx2 = Math.ceil(x2 / this.tileWidth)
 		var ry1 = Math.floor(y1 / this.tileHeight)
 		var ry2 = Math.ceil(y2 / this.tileHeight)
-		for(var x = rx1; x<=rx2; x++) {
-			for(var y = ry1; y<=ry2; y++) {
-				this.toDraw.push({ x: x, y: y, t: this.tileData[y][x] })
-			}
-		}
+		this.invalidateTileRange(rx1,ry1,rx2,ry2)
 	}
 
 	draw() {
@@ -65,18 +78,31 @@ class Area {
 			}
 		}
 		// Draw all invalid tiles
+		var cleared = {}
 		while (true) {
 			var cell = this.toDraw.pop()
 			if (!cell) break
 			for(var i in cell.t) {
 				var t = cell.t[i]
+				if(!cleared[cell.x] || !cleared[cell.x][cell.y]) {
+					this.drawContext.color = 'black'
+					this.drawContext.fillRect(
+						this.offsetX+(cell.x*this.tileWidth), 
+						this.offsetY+(cell.y*this.tileHeight), 
+						this.tileWidth, 
+						this.tileHeight
+					)
+					cleared[cell.x] = cleared[cell.x] || {}
+					cleared[cell.x][cell.y] = true
+				}
 				this.drawContext.drawImage(
 					this.tilesAsset.element, 
 					t[0]*this.tileWidth, 
 					t[1]*this.tileHeight, 
 					this.tileWidth, 
 					this.tileHeight,
-					this.offsetX+(cell.x*this.tileWidth), this.offsetY+(cell.y*this.tileHeight), 
+					this.offsetX+(cell.x*this.tileWidth), 
+					this.offsetY+(cell.y*this.tileHeight), 
 					this.tileWidth, 
 					this.tileHeight
 				)

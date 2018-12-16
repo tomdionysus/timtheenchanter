@@ -22,8 +22,8 @@ class TimTheEnchanter extends GameEngine {
 		this.addMob('gallagher', 'gallagher', 'dungeonroom', 64, 256, 0, 2)
 		this.addMob('torch', 'dungeon', 'dungeonroom', 64*3, 0, 6, 6)	
 
-		this.addAnimation('torchAnimation','torch',[ [6,6],[6,5] ], {mode: Animation.LOOP, autoStart: true, tickDelay:100 })
 		this.addAnimation('gallagherAnimation','gallagher',[ [0,2],[1,2],[2,2],[1,2] ], {mode: Animation.LOOP, autoStart: true, tickDelay:250 })
+		this.addAnimation('torchAnimation','torch',[ [6,6],[6,5] ], {mode: Animation.LOOP, autoStart: true, tickDelay:100 })
 	}
 
 	start() {
