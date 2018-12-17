@@ -47,6 +47,10 @@ class Editor extends GameEngine {
 		context.restore()
 	}
 
+	addArea(name, assetName, tilesUrl) {
+		this.areaDefs[name] = { assetName: assetName, tilesUrl: tilesUrl, drawAccess: true }
+	}
+
 	processKey(e) {
 		var tile = this.areas['dungeon'].getTiles(this.cursorX, this.cursorY)
 		if(!tile) tile = []
@@ -108,10 +112,18 @@ class Editor extends GameEngine {
 			// z - Save
 			this.areas['dungeon'].optimise()
 			var api = getAPIClient()
-			api.post('/map', { map: this.areas['dungeon'].tileData }, (err) => {
+			api.post('/map', { map: this.areas['dungeon'].tiles, access: this.areas['dungeon'].access }, (err) => {
 				if(err) { return console.error(err) }
 			})
-			break			
+			break
+		case 67:
+			// c - Clear Access mask
+			this.areas['dungeon'].setAccess(this.cursorX, this.cursorY, true)
+			break
+		case 86:
+			// v - Set Access Mask
+			this.areas['dungeon'].setAccess(this.cursorX, this.cursorY, false)
+			break		
 		default:
 			console.log(e.keyCode)
 		}

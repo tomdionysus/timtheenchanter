@@ -1,10 +1,14 @@
+/* global propDefault */
+
 class Area {
 	constructor(options) {
 		options = options || {}
 		this.tilesAsset = options.tilesAsset
-		this.tileWidth = options.tileWidth || 64
-		this.tileHeight = options.tileHeight || 64
-		this.tileData = options.tileData
+		this.tileWidth = propDefault(options,'tileWidth',64)
+		this.tileHeight = propDefault(options,'tileHeight',64)
+		this.tiles = options.tiles
+		this.access = options.access || {}
+		this.drawAccess = options.drawAccess
 		this.started = false
 
 		this.toDraw = []
@@ -21,12 +25,12 @@ class Area {
 
 	redraw() {
 		// Tiles
-		for(var y = 0; y< this.tileData.length; y++) {
-			var col = this.tileData[y] 
+		for(var y = 0; y< this.tiles.length; y++) {
+			var col = this.tiles[y] 
 			if(!col) continue
 			for(var x = 0; x<col.length; x++) {
 				if(!col[x]) continue
-				this.toDraw.push({ x: x, y: y, t: col[x] })
+				this.toDraw.push({ x: x, y: y })
 			}
 		}
 		// Mobs
@@ -36,35 +40,42 @@ class Area {
 	}
 
 	getTiles(x,y) {
-		var row = this.tileData[y]
+		var row = this.tiles[y]
 		return row ? row[x] : null
 	}
 
 	setTiles(x,y,tiles) {
-		this.tileData[y] = this.tileData[y] || []
-		this.tileData[y][x] = tiles
-		this.toDraw.push({ x: x, y: y, t: this.tileData[y][x] })
+		this.tiles[y] = this.tiles[y] || []
+		this.tiles[y][x] = tiles
+		this.toDraw.push({ x: x, y: y })
+	}
+
+	setAccess(x, y, mask) {
+		var row = this.access[x] || []
+		row[y] = !!mask
+		this.access[x] = row
+		this.toDraw.push({ x: x, y: y })
 	}
 
 	optimise() {
-		for(var y = 0; y<this.tileData.length; y++) {
-			var row = this.tileData[y]
+		for(var y = 0; y<this.tiles.length; y++) {
+			var row = this.tiles[y]
 			for(var x = 0; x<row.length; x++) {
 				var cell = row[x]
 				while(cell.length>0 && cell[cell.length-1] == null) cell.pop()
 				row[x] = cell
 			}
 			while(row.length>0 && row[row.length-1] == null || row[row.length-1] == []) row.pop()
-			this.tileData[y] = row
+			this.tiles[y] = row
 		}
-		while(this.tileData.length>0 && this.tileData[this.tileData.length-1] == null || this.tileData[this.tileData.length-1] == []) this.tileData.pop()
+		while(this.tiles.length>0 && this.tiles[this.tiles.length-1] == null || this.tiles[this.tiles.length-1] == []) this.tiles.pop()
 	}
 
 	invalidateTileRange(x1,y1,x2,y2) {
-		for(var y = y1; y<=y2 && y<this.tileData.length; y++) {
-			var r = this.tileData[y]
+		for(var y = y1; y<=y2 && y<this.tiles.length; y++) {
+			var r = this.tiles[y]
 			for(var x = x1; x<=x2 && x<r.length; x++) {
-				this.toDraw.push({ x: x, y: y, t: r[x] })
+				this.toDraw.push({ x: x, y: y })
 			}
 		}
 	}
@@ -102,13 +113,28 @@ class Area {
 					this.tileHeight
 				)
 				// Draw all layers in cell
-				for(i in cell.t) {
-					var t = cell.t[i]
+				var layers = this.tiles[cell.y][cell.x]
+				for(i in layers) {
+					var t = layers[i]
 					if(!t) continue
 					context.drawImage(
 						this.tilesAsset.element, 
 						t[0]*this.tileWidth, 
 						t[1]*this.tileHeight, 
+						this.tileWidth, 
+						this.tileHeight,
+						cell.x*this.tileWidth, 
+						cell.y*this.tileHeight, 
+						this.tileWidth, 
+						this.tileHeight
+					)
+				}
+				// Draw Access Mask
+				if(this.drawAccess && this.access[cell.x] && this.access[cell.x][cell.y]) {
+					context.drawImage(
+						this.tilesAsset.element, 
+						1*this.tileWidth, 
+						9*this.tileHeight, 
 						this.tileWidth, 
 						this.tileHeight,
 						cell.x*this.tileWidth, 

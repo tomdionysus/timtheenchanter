@@ -5,6 +5,11 @@ class GameEngine {
 		options = options || {}
 		this.targetId = options.targetId || 'game'
 
+		this.Area = options.Area || Area
+		this.Animation = options.Animation || Animation
+		this.Asset = options.Asset || Asset
+		this.Mob = options.Mob || Mob
+
 		this.assetNames = {}
 		this.areaDefs = {}
 		this.mobDefs = {}
@@ -20,6 +25,7 @@ class GameEngine {
 		this.minY = options.minY
 		this.maxX = options.maxX
 		this.maxY = options.maxY
+
 
 		this.minScale = typeof(options.minScale)=='undefined' ? 0.01 : options.minScale
 		this.maxScale = typeof(options.maxScale)=='undefined' ? 10 : options.maxScale
@@ -72,13 +78,11 @@ class GameEngine {
 		return this.assets[name]
 	}
 
-	addArea(name, assetName, tileDataUrl) {
-		this.areaDefs[name] = { assetName: assetName, tileDataUrl: tileDataUrl }
+	addArea(name, assetName, tilesUrl) {
+		this.areaDefs[name] = { assetName: assetName, tilesUrl: tilesUrl }
 	}
 
 	startAreas(callback) {
-
-
 		this.redraw()
 		if(this.running) window.requestAnimationFrame(this.tick.bind(this),0)
 		if(callback) callback()
@@ -98,7 +102,6 @@ class GameEngine {
 		if(this.clear) {
 			context.fillStyle = 'black'
 			context.fillRect(0, 0, this.element.width, this.element.height)
-			
 		}
 
 		// Main
@@ -159,9 +162,9 @@ class GameEngine {
 		this.areas = {}
 		var api = getAPIClient()
 		async.eachOf(this.areaDefs, (areaDef, name, cb) => {
-			api.get(areaDef.tileDataUrl, (err, data) => {
+			api.get(areaDef.tilesUrl, (err, data) => {
 				if(err) return cb(err)
-				this.areas[name] = new Area(Object.assign(areaDef, { tileData: data.map, tilesAsset: this.getAsset(areaDef.assetName) }))
+				this.areas[name] = new this.Area(Object.assign(areaDef, { tiles: data.map, access: data.access, tilesAsset: this.getAsset(areaDef.assetName) }))
 				cb()
 			})
 		}, callback)
@@ -173,7 +176,7 @@ class GameEngine {
 		this.mobs = {}
 		for(i in this.mobDefs) {
 			t = this.mobDefs[i]
-			var mob = new Mob(Object.assign(t, { asset: this.getAsset(t.assetName) }))
+			var mob = new this.Mob(Object.assign(t, { asset: this.getAsset(t.assetName) }))
 			this.mobs[i] = mob
 			this.areas[t.areaName].addMob(i, mob)
 		}
@@ -181,7 +184,7 @@ class GameEngine {
 		this.animations = {}
 		for(i in this.animationDefs) {
 			t = this.animationDefs[i]
-			this.animations[i] = new Animation(Object.assign(t, { mob: this.getMob(t.mobName) }))
+			this.animations[i] = new this.Animation(Object.assign(t, { mob: this.getMob(t.mobName) }))
 		}
 		if(callback) callback()
 	}
@@ -189,7 +192,7 @@ class GameEngine {
 	loadAssets(callback) {
 		this.assets = {}
 		for(var i in this.assetNames) {
-			this.assets[i] = new Asset({ name: i, src: this.assetNames[i] })
+			this.assets[i] = new this.Asset({ name: i, src: this.assetNames[i] })
 		}
 
 		async.each(this.assets, (asset, cb) => {

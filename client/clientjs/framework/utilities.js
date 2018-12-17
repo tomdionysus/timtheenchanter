@@ -19,3 +19,8 @@ function getAutoName(typeName) {
 	if(!uxNames[typeName]) uxNames[typeName] = 0
 	return typeName+(uxNames[typeName]++)
 }
+
+function propDefault(options,name,value) {
+	if(typeof(options[name])=='undefined') options[name] = value
+		return value
+}
