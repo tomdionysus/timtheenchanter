@@ -8,19 +8,32 @@ class Area {
 		this.tileHeight = propDefault(options,'tileHeight',64)
 		this.tiles = options.tiles
 		this.access = options.access || {}
-		this.drawAccess = options.drawAccess
+		this.drawSystem = options.drawSystem
 		this.started = false
 
 		this.toDraw = []
 
 		this.draw = this.draw.bind(this)
 
+		this.triggers = {}
 		this.mobs = {}
 	}
 
 	addMob(id, mob) {
 		this.mobs[id] = mob
 		this.mobs[id].area = this
+	}
+
+	addTrigger(x,y,data) {
+		this.triggers[y] = this.triggers[y] || {}
+		this.triggers[y][x] = data
+	}
+
+	clearTrigger(x,y) {
+		if(!this.triggers[y]) return
+		if(!this.triggers[y][x]) return
+		delete this.triggers[y][x]
+		if(this.triggers[y] == {}) delete this.triggers[y]
 	}
 
 	redraw() {
@@ -60,8 +73,10 @@ class Area {
 	optimise() {
 		for(var y = 0; y<this.tiles.length; y++) {
 			var row = this.tiles[y]
+			if(!row) continue
 			for(var x = 0; x<row.length; x++) {
 				var cell = row[x]
+				if(!cell) continue
 				while(cell.length>0 && cell[cell.length-1] == null) cell.pop()
 				row[x] = cell
 			}
@@ -129,19 +144,36 @@ class Area {
 						this.tileHeight
 					)
 				}
-				// Draw Access Mask
-				if(this.drawAccess && this.access[cell.x] && this.access[cell.x][cell.y]) {
-					context.drawImage(
-						this.tilesAsset.element, 
-						1*this.tileWidth, 
-						9*this.tileHeight, 
-						this.tileWidth, 
-						this.tileHeight,
-						cell.x*this.tileWidth, 
-						cell.y*this.tileHeight, 
-						this.tileWidth, 
-						this.tileHeight
-					)
+				// Draw system entities?
+				if(this.drawSystem) {
+					// Draw Access Mask
+					if(this.access[cell.x] && this.access[cell.x][cell.y]) {
+						context.drawImage(
+							this.tilesAsset.element, 
+							1*this.tileWidth, 
+							9*this.tileHeight, 
+							this.tileWidth, 
+							this.tileHeight,
+							cell.x*this.tileWidth, 
+							cell.y*this.tileHeight, 
+							this.tileWidth, 
+							this.tileHeight
+						)
+					}
+					// Draw triggers
+					if(this.triggers[cell.y] && this.triggers[cell.y][cell.x]) {
+						context.drawImage(
+							this.tilesAsset.element, 
+							2*this.tileWidth, 
+							9*this.tileHeight, 
+							this.tileWidth, 
+							this.tileHeight,
+							cell.x*this.tileWidth, 
+							cell.y*this.tileHeight, 
+							this.tileWidth, 
+							this.tileHeight
+						)
+					}
 				}
 				// Mark cell drawn
 				drawn[cell.x] = drawn[cell.x] || {}

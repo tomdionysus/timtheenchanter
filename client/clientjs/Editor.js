@@ -10,6 +10,8 @@ class Editor extends GameEngine {
 
 		this.addMob('cursor', 'dungeon', 'dungeon', 0, 0, 2, 8)
 
+		this.addTrigger('dungeon',8,0,'testing')
+
 		this.cursorX = 0
 		this.cursorY = 0
 		this.cursorZ = 0
@@ -48,7 +50,8 @@ class Editor extends GameEngine {
 	}
 
 	addArea(name, assetName, tilesUrl) {
-		this.areaDefs[name] = { assetName: assetName, tilesUrl: tilesUrl, drawAccess: true }
+		super.addArea(name, assetName, tilesUrl)
+		this.areaDefs[name].drawSystem = true
 	}
 
 	processKey(e) {

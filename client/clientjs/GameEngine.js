@@ -26,7 +26,6 @@ class GameEngine {
 		this.maxX = options.maxX
 		this.maxY = options.maxY
 
-
 		this.minScale = typeof(options.minScale)=='undefined' ? 0.01 : options.minScale
 		this.maxScale = typeof(options.maxScale)=='undefined' ? 10 : options.maxScale
 
@@ -79,7 +78,11 @@ class GameEngine {
 	}
 
 	addArea(name, assetName, tilesUrl) {
-		this.areaDefs[name] = { assetName: assetName, tilesUrl: tilesUrl }
+		this.areaDefs[name] = { assetName: assetName, tilesUrl: tilesUrl, triggers: [] }
+	}
+
+	addTrigger(areaName, x, y, type, target) {
+		this.areaDefs[areaName].triggers.push( { x:x, y:y, type:type, target:target })
 	}
 
 	startAreas(callback) {
@@ -165,6 +168,10 @@ class GameEngine {
 			api.get(areaDef.tilesUrl, (err, data) => {
 				if(err) return cb(err)
 				this.areas[name] = new this.Area(Object.assign(areaDef, { tiles: data.map, access: data.access, tilesAsset: this.getAsset(areaDef.assetName) }))
+				for(var i in areaDef.triggers) {
+					var trigger = areaDef.triggers[i]
+					this.areas[name].addTrigger(trigger.x, trigger.y, trigger)
+				}
 				cb()
 			})
 		}, callback)
