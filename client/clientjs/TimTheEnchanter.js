@@ -14,7 +14,11 @@ class TimTheEnchanter extends GameEngine {
 		this.addMob('gallagher', 'gallagher', 'dungeonroom', 192, 256, 0, 2)
 		this.addMob('torch', 'dungeon', 'dungeonroom', 64*3, 0, 6, 6)	
 
-		this.addAnimation('gallagherAnimation','gallagher',[ [0,2],[1,2],[2,2],[1,2] ], {mode: Animation.LOOP, autoStart: true, tickDelay:250 })
+		this.addAnimation('gallagher_walkright','gallagher',[ [0,2],[1,2],[2,2],[1,2], [0,2],[1,2],[2,2],[1,2] ], {mode: Animation.ONCE, tickDelay:100 })
+		this.addAnimation('gallagher_walkdown','gallagher',[ [0,0],[1,0],[2,0],[1,0], [0,0],[1,0],[2,0],[1,0] ], {mode: Animation.ONCE, tickDelay:100 })
+		this.addAnimation('gallagher_walkup','gallagher',[ [0,3],[1,3],[2,3],[1,3], [0,3],[1,3],[2,3],[1,3] ], {mode: Animation.ONCE, tickDelay:100 })
+		this.addAnimation('gallagher_walkleft','gallagher',[ [0,1],[1,1],[2,1],[1,1], [0,1],[1,1],[2,1],[1,1] ], {mode: Animation.ONCE, tickDelay:100 })
+		
 		this.addAnimation('torchAnimation','torch',[ [6,6],[6,5] ], {mode: Animation.LOOP, autoStart: true, tickDelay:100 })
 
 		this.addTrigger('dungeonroom',8,0,'exit','testing')

@@ -70,6 +70,13 @@ class Area {
 		this.toDraw.push({ x: x, y: y })
 	}
 
+	getAccess(x,y) {
+		console.log(x,y)
+		var row = this.access[x]
+		if(!row) return false
+		return !!row[y]
+	}
+
 	optimise() {
 		for(var y = 0; y<this.tiles.length; y++) {
 			var row = this.tiles[y]

@@ -10,14 +10,17 @@ class Animation {
 		this.autoStart = options.autoStart
 	}
 
-	start(currentFrame) {
+	start(currentFrame, callback) {
+		if(this.running) return
 		this.currentFrame = currentFrame || 0
 		this.running = true
+		this.callback = callback
 		setTimeout(()=>{this.loop()}, this.tickDelay)
 	}
 
 	stop() {
 		this.running = false
+		if(this.callback) { this.callback(this); this.callback = null }
 	}
 
 	addFrame(x,y) {

@@ -11,7 +11,9 @@ class Mob {
 		this.areaTileHeight = options.areaTileHeight || this.tileHeight || 64
 		this.toRedraw = true
 
-		this.invalid = { x1: Number.MAX_SAFE_INTEGER, x2: 0, y1: Number.MAX_SAFE_INTEGER, y2: 0}
+		this.moving = false
+
+		this.clearInvalid()
 
 		this.animations = {}
 	}
@@ -30,13 +32,17 @@ class Mob {
 			this.tileWidth, 
 			this.tileHeight
 		)
-		this.invalid = { x1: Number.MAX_SAFE_INTEGER, x2: 0, y1: Number.MAX_SAFE_INTEGER, y2: 0}
+		this.clearInvalid()
 
 		this.toRedraw = false
 	}
 
 	redraw() {
 		this.toRedraw = true
+	}
+
+	canMove(dx,dy,area) {
+		return !area.getAccess(Math.round(this.offsetX/this.areaTileWidth)+dx, Math.round(this.offsetY/this.areaTileHeight)+dy)
 	}
 
 	setTile(x,y) {
@@ -52,6 +58,30 @@ class Mob {
 		this.offsetY = y
 		this.invalidateCurrent()
 		this.toRedraw = true
+	}
+
+	animateMove(dx, dy, animation) {
+		if(this.moving) return
+			
+		var steps = animation.frames.length
+		dx = dx*this.tileWidth/steps
+		dy = dy*this.tileHeight/steps
+		this.moving = true
+
+		var mv = () => {
+			this.invalidateCurrent()
+			this.offsetX += dx
+			this.offsetY += dy
+			this.invalidateCurrent()
+			this.toRedraw = true
+			if(steps-- > 0) setTimeout(mv,animation.tickDelay)
+		}
+		setTimeout(mv,animation.tickDelay)
+		animation.start(null, ()=>{ this.moving = false })
+	}
+
+	clearInvalid() {
+		this.invalid = { x1: Number.MAX_SAFE_INTEGER, x2: 0, y1: Number.MAX_SAFE_INTEGER, y2: 0}
 	}
 
 	invalidateCurrent() {

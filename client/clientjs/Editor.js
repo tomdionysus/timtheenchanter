@@ -11,6 +11,8 @@ class Editor extends GameEngine {
 		this.addMob('cursor', 'dungeon', 'dungeon', 0, 0, 2, 8)
 
 		this.addTrigger('dungeon',8,0,'testing')
+		this.addTrigger('dungeon',2,1,'testing')
+		this.addTrigger('dungeon',12,9,'testing')
 
 		this.cursorX = 0
 		this.cursorY = 0

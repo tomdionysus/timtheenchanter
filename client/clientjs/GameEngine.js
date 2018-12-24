@@ -34,6 +34,10 @@ class GameEngine {
 	}
 
 	start(callback) {
+		if(this.processKey) {
+			document.onkeyup = (e) => { this.processKey(e) }
+		}
+
 		this.running = true
 		async.series([
 			// Load Assets
@@ -70,6 +74,10 @@ class GameEngine {
 
 	addAsset(name, src) {
 		this.assetNames[name] = src
+	}
+
+	getArea(name) {
+		return this.areas[name]
 	}
 
 	getAsset(name) {
@@ -277,5 +285,31 @@ class GameEngine {
 	_setMouseCoords(e) {
 		this.mouseX = (e.offsetX/this.scale)-this.x
 		this.mouseY = (e.offsetY/this.scale)-this.y
+	}
+
+	processKey(e) {
+		switch(e.keyCode) {
+		case 37:
+			if(!this.mobs['gallagher'].canMove(-1,0, this.getArea('dungeonroom'))) return
+			this.mobs['gallagher'].animateMove(-1,0,this.getAnimation('gallagher_walkleft'))
+			break
+		case 39:
+			if(!this.mobs['gallagher'].canMove(1,0, this.getArea('dungeonroom'))) return
+			this.mobs['gallagher'].animateMove(1,0,this.getAnimation('gallagher_walkright'))
+			break
+		case 38:
+			if(!this.mobs['gallagher'].canMove(0,-1, this.getArea('dungeonroom'))) return
+			this.mobs['gallagher'].animateMove(0,-1,this.getAnimation('gallagher_walkup'))
+			break
+		case 40:
+			if(!this.mobs['gallagher'].canMove(0,1, this.getArea('dungeonroom'))) return
+			this.mobs['gallagher'].animateMove(0,1,this.getAnimation('gallagher_walkdown'))
+			break
+		default:
+			console.log(e.keyCode)
+		}
+
+		e.preventDefault()
+		e.stopPropagation()
 	}
 }
