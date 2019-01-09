@@ -1,3 +1,7 @@
+/* global XMLHttpRequest */
+
+var _apiClient
+
 class APIClient {
 	constructor(options) {
 		options = options || {}
@@ -27,8 +31,10 @@ class APIClient {
 	patch(path, data, callback) { this.apiCall('PATCH', path, data, callback) }
 	put(path, data, callback) { this.apiCall('PUT', path, data, callback) }
 	delete(path, callback) { this.apiCall('DELETE', path, null, callback) }
+	
+	static getDefaultClient() {
+		return _apiClient = _apiClient || new APIClient({ baseUrl: '/api' })
+	}
 }
 
-function getAPIClient() {
-	return window.apiClient = window.apiClient || new APIClient({ baseUrl: '/api' })
-}
+module.exports = APIClient

@@ -1,4 +1,5 @@
-/* global GameEngine, Mob */
+const GameEngine = require('GameEngine')
+const Animation = require('Animation')
 
 class TimTheEnchanter extends GameEngine {
 	constructor(options) {
@@ -46,3 +47,5 @@ class TimTheEnchanter extends GameEngine {
 		context.restore()
 	}
 }
+
+module.exports = TimTheEnchanter

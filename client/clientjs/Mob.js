@@ -103,3 +103,5 @@ class Mob {
 		this.moveTo(x*this.areaTileWidth, y*this.areaTileHeight)
 	}
 }
+
+module.exports = Mob

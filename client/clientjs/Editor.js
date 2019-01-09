@@ -1,4 +1,7 @@
-/* global GameEngine, Mob, getAPIClient */
+/* global document, Mob, getAPIClient */
+
+const GameEngine = require('GameEngine')
+const APIClient = require('APIClient')
 
 class Editor extends GameEngine {
 	constructor(options) {
@@ -116,7 +119,7 @@ class Editor extends GameEngine {
 		case 90:
 			// z - Save
 			this.areas['dungeon'].optimise()
-			var api = getAPIClient()
+			var api = APIClient.getDefaultClient()
 			api.post('/map', { map: this.areas['dungeon'].tiles, access: this.areas['dungeon'].access }, (err) => {
 				if(err) { return console.error(err) }
 			})
@@ -150,3 +153,5 @@ class Editor extends GameEngine {
 		this.getMob('cursor').moveToTile(this.cursorX,this.cursorY)
 	}
 }
+
+module.exports = Editor

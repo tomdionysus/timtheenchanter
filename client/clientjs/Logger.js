@@ -1,5 +1,9 @@
 /* global vsprintf */
 
+const sprintf = require('sprintf-js')
+
+var _defaultLogger
+
 class Logger {
 	constructor(options) {
 		options = options || {}
@@ -52,11 +56,13 @@ class Logger {
 			3: 'error',
 		}[logLevel] || 'unknown'
 	} 
+	
+	static getDefaultLogger() {
+		return _defaultLogger = _defaultLogger || new Logger()
+	}
 }
 
-function getLogger() {
-	if (window._logger) { return window._logger }
-	return window._logger = new Logger()
-}
+
+module.exports = Logger
 
 

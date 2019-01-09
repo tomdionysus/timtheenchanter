@@ -45,3 +45,5 @@ class Animation {
 
 Animation.LOOP = 0
 Animation.ONCE = 1
+
+module.exports = Animation

@@ -10,3 +10,5 @@ class Asset {
 		this.element.src = this.src
 	}
 }
+
+module.exports = Asset

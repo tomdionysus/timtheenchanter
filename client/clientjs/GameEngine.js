@@ -1,4 +1,10 @@
-/* global Asset, async, Area, Mob, getAPIClient */
+const async = require('async')
+
+const APIClient = require('APIClient')
+const Area = require('Area')
+const Animation = require('Animation')
+const Asset = require('Asset')
+const Mob = require('Mob')
 
 class GameEngine {
 	constructor(options) {
@@ -171,7 +177,7 @@ class GameEngine {
 	loadAreas(callback) {
 		// TileBackgrounds
 		this.areas = {}
-		var api = getAPIClient()
+		var api = APIClient.getDefaultClient()
 		async.eachOf(this.areaDefs, (areaDef, name, cb) => {
 			api.get(areaDef.tilesUrl, (err, data) => {
 				if(err) return cb(err)
@@ -288,28 +294,31 @@ class GameEngine {
 	}
 
 	processKey(e) {
+		e.preventDefault()
+		e.stopPropagation()
+		e.stopImmediatePropagation()
+
 		switch(e.keyCode) {
 		case 37:
-			if(!this.mobs['gallagher'].canMove(-1,0, this.getArea('dungeonroom'))) return
+			if(!this.mobs['gallagher'].canMove(-1,0, this.getArea('dungeonroom'))) break
 			this.mobs['gallagher'].animateMove(-1,0,this.getAnimation('gallagher_walkleft'))
 			break
 		case 39:
-			if(!this.mobs['gallagher'].canMove(1,0, this.getArea('dungeonroom'))) return
+			if(!this.mobs['gallagher'].canMove(1,0, this.getArea('dungeonroom'))) break
 			this.mobs['gallagher'].animateMove(1,0,this.getAnimation('gallagher_walkright'))
 			break
 		case 38:
-			if(!this.mobs['gallagher'].canMove(0,-1, this.getArea('dungeonroom'))) return
+			if(!this.mobs['gallagher'].canMove(0,-1, this.getArea('dungeonroom'))) break
 			this.mobs['gallagher'].animateMove(0,-1,this.getAnimation('gallagher_walkup'))
 			break
 		case 40:
-			if(!this.mobs['gallagher'].canMove(0,1, this.getArea('dungeonroom'))) return
+			if(!this.mobs['gallagher'].canMove(0,1, this.getArea('dungeonroom'))) break
 			this.mobs['gallagher'].animateMove(0,1,this.getAnimation('gallagher_walkdown'))
 			break
 		default:
 			console.log(e.keyCode)
 		}
-
-		e.preventDefault()
-		e.stopPropagation()
 	}
 }
+
+module.exports = GameEngine

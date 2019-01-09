@@ -1,11 +1,11 @@
-/* global propDefault */
+const Util = require('Util')
 
 class Area {
 	constructor(options) {
 		options = options || {}
 		this.tilesAsset = options.tilesAsset
-		this.tileWidth = propDefault(options,'tileWidth',64)
-		this.tileHeight = propDefault(options,'tileHeight',64)
+		this.tileWidth = Util.propDefault(options,'tileWidth',64)
+		this.tileHeight = Util.propDefault(options,'tileHeight',64)
 		this.tiles = options.tiles
 		this.access = options.access || {}
 		this.drawSystem = options.drawSystem
@@ -193,3 +193,5 @@ class Area {
 		}
 	}
 }
+
+module.exports = Area
