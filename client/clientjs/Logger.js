@@ -1,6 +1,7 @@
 /* global vsprintf */
 
-const sprintf = require('sprintf-js')
+const vsprintf = require('sprintf-js')
+const Browser = require('Browser')
 
 var _defaultLogger
 
@@ -8,6 +9,7 @@ class Logger {
 	constructor(options) {
 		options = options || {}
 		this.logLevel = options.logLevel || 0
+		this.Browser = options.Browser || Browser
 	}
 	
 	debug() {
@@ -29,15 +31,13 @@ class Logger {
 		this.log('ERROR', Array.from(arguments))
 	}
 
-	/* eslint-disable no-console */
 	log(type,args) {
 		var d = new Date().toISOString()
 		var fmt = args.shift()
 		var s = vsprintf(fmt,args)
-		if(type=='ERROR') return console.error(d+' [ERROR] '+s)
-		console.log(d+' ['+type+'] '+s)
+		if(type=='ERROR') return this.Browser.console.error(d+' [ERROR] '+s)
+		this.Browser.console.log(d+' ['+type+'] '+s)
 	}
-	/* eslint-enable no-console */
 
 	static stringToLogLevel(str) {
 		return {

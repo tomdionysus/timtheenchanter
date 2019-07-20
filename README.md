@@ -9,7 +9,7 @@ npm install
 ## Running
 
 ```
-node start
+npm start
 open http://localhost:8080
 ```
 

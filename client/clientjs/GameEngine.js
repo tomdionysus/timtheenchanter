@@ -5,12 +5,14 @@ const Area = require('Area')
 const Animation = require('Animation')
 const Asset = require('Asset')
 const Mob = require('Mob')
+const Browser = require('Browser')
 
 class GameEngine {
 	constructor(options) {
 		options = options || {}
 		this.targetId = options.targetId || 'game'
 
+		this.Browser = options.Browser || Browser
 		this.Area = options.Area || Area
 		this.Animation = options.Animation || Animation
 		this.Asset = options.Asset || Asset
@@ -41,7 +43,7 @@ class GameEngine {
 
 	start(callback) {
 		if(this.processKey) {
-			document.onkeyup = (e) => { this.processKey(e) }
+			this.Browser.document.onkeyup = (e) => { this.processKey(e) }
 		}
 
 		this.running = true
@@ -101,7 +103,7 @@ class GameEngine {
 
 	startAreas(callback) {
 		this.redraw()
-		if(this.running) window.requestAnimationFrame(this.tick.bind(this),0)
+		if(this.running) this.Browser.window.requestAnimationFrame(this.tick.bind(this),0)
 		if(callback) callback()
 	}
 
@@ -142,7 +144,7 @@ class GameEngine {
 		
 		this.clear = false
 
-		if(this.running) window.requestAnimationFrame(this.tick.bind(this),0)
+		if(this.running) this.Browser.window.requestAnimationFrame(this.tick.bind(this),0)
 	}
 
 	addMob(name, assetName, areaName, offsetX, offsetY, tileX, tileY) {
@@ -222,8 +224,8 @@ class GameEngine {
 	}
 
 	bootElement(callback) {
-		this.target = document.getElementById(this.targetId)
-		this.element = document.createElement('canvas')
+		this.target = this.Browser.document.getElementById(this.targetId)
+		this.element = this.Browser.document.createElement('canvas')
 
 		this.element.width = this.target.getAttribute('width')
 		this.element.height = this.target.getAttribute('height')
@@ -316,7 +318,7 @@ class GameEngine {
 			this.mobs['gallagher'].animateMove(0,1,this.getAnimation('gallagher_walkdown'))
 			break
 		default:
-			console.log(e.keyCode)
+			this.Browser.console.log(e.keyCode)
 		}
 	}
 }
