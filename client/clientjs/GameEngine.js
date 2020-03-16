@@ -1,4 +1,5 @@
 const async = require('async')
+const _ = require('underscore')
 
 const APIClient = require('APIClient')
 const Area = require('Area')
@@ -226,9 +227,16 @@ class GameEngine {
 	bootElement(callback) {
 		this.target = this.Browser.document.getElementById(this.targetId)
 		this.element = this.Browser.document.createElement('canvas')
+		this.document = this.target.ownerDocument
+		this.window = this.document.defaultView || this.document.parentWindow
 
-		this.element.width = this.target.getAttribute('width')
-		this.element.height = this.target.getAttribute('height')
+		if(this.fullscreen) {
+			this.recomputeFullScreen()
+			this.window.addEventListener('resize', _.debounce(() => { this.recomputeFullScreen() } ,100))
+		} else {
+			this.element.width = this.target.getAttribute('width')
+			this.element.height = this.target.getAttribute('height')
+		}
 
 		this.element.classList.add('gamescreen')
 		this.target.parentNode.replaceChild(this.element, this.target)
@@ -239,6 +247,14 @@ class GameEngine {
 		if(this.enableScroll || this.enableZoom) this.bindMouseWheel()
 
 		if(callback) callback()
+	}
+
+	recomputeFullScreen() {
+		this.element.width = this.window.innerWidth
+		this.element.height = this.window.innerHeight
+		this.w = this.element.width / this.scale
+		this.h = this.element.height / this.scale
+		this.redraw()
 	}
 
 	// Event Handlers
@@ -293,33 +309,6 @@ class GameEngine {
 	_setMouseCoords(e) {
 		this.mouseX = (e.offsetX/this.scale)-this.x
 		this.mouseY = (e.offsetY/this.scale)-this.y
-	}
-
-	processKey(e) {
-		e.preventDefault()
-		e.stopPropagation()
-		e.stopImmediatePropagation()
-
-		switch(e.keyCode) {
-		case 37:
-			if(!this.mobs['gallagher'].canMove(-1,0, this.getArea('dungeonroom'))) break
-			this.mobs['gallagher'].animateMove(-1,0,this.getAnimation('gallagher_walkleft'))
-			break
-		case 39:
-			if(!this.mobs['gallagher'].canMove(1,0, this.getArea('dungeonroom'))) break
-			this.mobs['gallagher'].animateMove(1,0,this.getAnimation('gallagher_walkright'))
-			break
-		case 38:
-			if(!this.mobs['gallagher'].canMove(0,-1, this.getArea('dungeonroom'))) break
-			this.mobs['gallagher'].animateMove(0,-1,this.getAnimation('gallagher_walkup'))
-			break
-		case 40:
-			if(!this.mobs['gallagher'].canMove(0,1, this.getArea('dungeonroom'))) break
-			this.mobs['gallagher'].animateMove(0,1,this.getAnimation('gallagher_walkdown'))
-			break
-		default:
-			this.Browser.console.log(e.keyCode)
-		}
 	}
 }
 

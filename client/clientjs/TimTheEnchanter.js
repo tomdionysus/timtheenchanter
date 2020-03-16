@@ -11,6 +11,7 @@ class TimTheEnchanter extends GameEngine {
 		this.addArea('dungeonroom', 'dungeon', '/map')
 
 		this.debug = true
+		this.fullscreen = true
 
 		this.addMob('gallagher', 'gallagher', 'dungeonroom', 192, 256, 0, 2)
 		this.addMob('torch', 'dungeon', 'dungeonroom', 64*3, 0, 6, 6)	
@@ -45,6 +46,33 @@ class TimTheEnchanter extends GameEngine {
 			+' Limit Max: (X: '+Math.round(this.maxX*this.scale)+', Y: '+Math.round(this.maxY*this.scale)+')'
 			, 10, 20)
 		context.restore()
+	}
+
+	processKey(e) {
+		e.preventDefault()
+		e.stopPropagation()
+		e.stopImmediatePropagation()
+
+		switch(e.keyCode) {
+		case 37:
+			if(!this.mobs['gallagher'].canMove(-1,0, this.getArea('dungeonroom'))) break
+			this.mobs['gallagher'].animateMove(-1,0,this.getAnimation('gallagher_walkleft'))
+			break
+		case 39:
+			if(!this.mobs['gallagher'].canMove(1,0, this.getArea('dungeonroom'))) break
+			this.mobs['gallagher'].animateMove(1,0,this.getAnimation('gallagher_walkright'))
+			break
+		case 38:
+			if(!this.mobs['gallagher'].canMove(0,-1, this.getArea('dungeonroom'))) break
+			this.mobs['gallagher'].animateMove(0,-1,this.getAnimation('gallagher_walkup'))
+			break
+		case 40:
+			if(!this.mobs['gallagher'].canMove(0,1, this.getArea('dungeonroom'))) break
+			this.mobs['gallagher'].animateMove(0,1,this.getAnimation('gallagher_walkdown'))
+			break
+		default:
+			this.Browser.console.log(e.keyCode)
+		}
 	}
 }
 

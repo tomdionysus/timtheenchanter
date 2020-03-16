@@ -153,34 +153,7 @@ class Area {
 				}
 				// Draw system entities?
 				if(this.drawSystem) {
-					// Draw Access Mask
-					if(this.access[cell.x] && this.access[cell.x][cell.y]) {
-						context.drawImage(
-							this.tilesAsset.element, 
-							1*this.tileWidth, 
-							9*this.tileHeight, 
-							this.tileWidth, 
-							this.tileHeight,
-							cell.x*this.tileWidth, 
-							cell.y*this.tileHeight, 
-							this.tileWidth, 
-							this.tileHeight
-						)
-					}
-					// Draw triggers
-					if(this.triggers[cell.y] && this.triggers[cell.y][cell.x]) {
-						context.drawImage(
-							this.tilesAsset.element, 
-							2*this.tileWidth, 
-							9*this.tileHeight, 
-							this.tileWidth, 
-							this.tileHeight,
-							cell.x*this.tileWidth, 
-							cell.y*this.tileHeight, 
-							this.tileWidth, 
-							this.tileHeight
-						)
-					}
+					this._drawSystem(context, cell)
 				}
 				// Mark cell drawn
 				drawn[cell.x] = drawn[cell.x] || {}
@@ -190,6 +163,37 @@ class Area {
 		// Draw mobs
 		for(i in this.mobs) {
 			this.mobs[i].draw(context)
+		}
+	}
+
+	_drawSystem(context, cell) {
+		// Draw Access Mask
+		if(this.access[cell.x] && this.access[cell.x][cell.y]) {
+			context.drawImage(
+				this.tilesAsset.element, 
+				1*this.tileWidth, 
+				9*this.tileHeight, 
+				this.tileWidth, 
+				this.tileHeight,
+				cell.x*this.tileWidth, 
+				cell.y*this.tileHeight, 
+				this.tileWidth, 
+				this.tileHeight
+			)
+		}
+		// Draw triggers
+		if(this.triggers[cell.y] && this.triggers[cell.y][cell.x]) {
+			context.drawImage(
+				this.tilesAsset.element, 
+				2*this.tileWidth, 
+				9*this.tileHeight, 
+				this.tileWidth, 
+				this.tileHeight,
+				cell.x*this.tileWidth, 
+				cell.y*this.tileHeight, 
+				this.tileWidth, 
+				this.tileHeight
+			)
 		}
 	}
 }
